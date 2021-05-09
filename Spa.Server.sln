@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{464F1359-75E5-47A0-B68D-681A4F6E2B16}"
+ProjectSection(SolutionItems) = preProject
+	.dockerignore = .dockerignore
+	.editorconfig = .editorconfig
+	.gitignore = .gitignore
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spa.Server", "src\Spa.Server\Spa.Server.csproj", "{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

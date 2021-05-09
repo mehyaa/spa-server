@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Spa.Server",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Spa.Server/bin/Debug/net5.0/Spa.Server.dll",
+            "cwd": "${workspaceFolder}/src/Spa.Server",
+            "args": [],
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "local"
+            },
+            "stopAtEntry": true,
+            "allowFastEvaluate": true,
+            "suppressJITOptimizations": true,
+            "justMyCode": false,
+            "requireExactSource": false,
+            "enableStepFiltering": true,
+            "sourceLinkOptions": {
+              "*": {
+                "enabled": true
+              }
+            },
+            "symbolOptions": {
+              "moduleFilter": {
+                "mode": "loadOnlyIncluded",
+                "includedModules": [],
+                "excludedModules": []
+              },
+              "searchPaths": [],
+              "searchMicrosoftSymbolServer": true,
+              "searchNuGetOrgSymbolServer": true
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ]
+}
