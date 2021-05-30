@@ -11,53 +11,13 @@ using System.IO;
 
 namespace Spa.Server
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
             DotNetEnv.Env.Load();
 
-            var webHost = CreateWebHostBuilder(args).Build();
-
-            var env = webHost.Services.GetRequiredService<IWebHostEnvironment>();
-
-            var spaOptions = webHost.Services.GetRequiredService<SpaOptions>();
-
-            var logger = webHost.Services.GetRequiredService<ILogger<Program>>();
-
-            var spaPath =
-                Path.IsPathRooted(spaOptions.RootPath)
-                    ? spaOptions.RootPath
-                    : Path.Combine(env.ContentRootPath, spaOptions.RootPath);
-
-            logger.LogDebug($"Spa path: {spaPath}");
-
-            if (spaOptions.PopulateEnvironmentVariablesInFiles?.Count > 0)
-            {
-                logger.LogDebug("Populating environment variables in files...");
-
-                foreach (var filePath in spaOptions.PopulateEnvironmentVariablesInFiles)
-                {
-                    var currentFilePath =
-                        Path.IsPathRooted(filePath)
-                            ? filePath
-                            : Path.Combine(spaPath, filePath);
-
-                    logger.LogDebug($"Populating environment variables in {currentFilePath}");
-
-                    var content = File.ReadAllText(currentFilePath);
-
-                    logger.LogTrace($"{currentFilePath} old content:\n{content}");
-
-                    content = Environment.ExpandEnvironmentVariables(content);
-
-                    File.WriteAllText(currentFilePath, content);
-
-                    logger.LogTrace($"{currentFilePath} new content:\n{content}");
-                }
-            }
-
-            webHost.Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -72,14 +32,32 @@ namespace Spa.Server
                                 .GetSection("Spa")
                                 .Get<SpaOptions>();
 
+                        services.AddSingleton(spaOptions);
+
                         var spaPath =
                             Path.IsPathRooted(spaOptions.RootPath)
                                 ? spaOptions.RootPath
                                 : Path.Combine(env.ContentRootPath, spaOptions.RootPath);
 
-                        services.AddSpaStaticFiles(setup => setup.RootPath = spaPath);
+                        // Files need to be populated before configuration
+                        if (spaOptions.PopulateEnvironmentVariablesInFiles?.Count > 0)
+                        {
+                            foreach (var filePath in spaOptions.PopulateEnvironmentVariablesInFiles)
+                            {
+                                var currentFilePath =
+                                    Path.IsPathRooted(filePath)
+                                        ? filePath
+                                        : Path.Combine(spaPath, filePath);
 
-                        services.AddSingleton(spaOptions);
+                                var content = File.ReadAllText(currentFilePath);
+
+                                content = Environment.ExpandEnvironmentVariables(content);
+
+                                File.WriteAllText(currentFilePath, content);
+                            }
+                        }
+
+                        services.AddSpaStaticFiles(setup => setup.RootPath = spaPath);
                     }
                 )
                 .Configure((context, app) =>
