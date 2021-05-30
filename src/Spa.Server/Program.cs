@@ -17,16 +17,40 @@ namespace Spa.Server
         {
             DotNetEnv.Env.Load();
 
-            await CreateWebHostBuilder(args).Build().RunAsync();
+            var webHost = CreateWebHostBuilder(args).Build();
+
+            var env = webHost.Services.GetRequiredService<IWebHostEnvironment>();
+
+            var spaOptions = webHost.Services.GetRequiredService<SpaOptions>();
+
+            var spaPath =
+                Path.IsPathRooted(spaOptions.RootPath)
+                    ? spaOptions.RootPath
+                    : Path.Combine(env.ContentRootPath, spaOptions.RootPath);
+
+            if (spaOptions.PopulateEnvironmentVariablesInFiles?.Count > 0)
+            {
+                foreach (var filePath in spaOptions.PopulateEnvironmentVariablesInFiles)
+                {
+                    var currentFilePath =
+                        Path.IsPathRooted(filePath)
+                            ? filePath
+                            : Path.Combine(spaPath, filePath);
+
+                    PopulateEnvironmentVariablesInFileAsync(currentFilePath);
+                }
+            }
+
+            await webHost.RunAsync();
         }
 
-        private static void PopulateEnvironmentVariablesInFile(string filePath)
+        private static async Task PopulateEnvironmentVariablesInFileAsync(string filePath)
         {
             var content = File.ReadAllText(filePath);
 
             content = Environment.ExpandEnvironmentVariables(content);
 
-            File.WriteAllText(filePath, content);
+            await File.WriteAllTextAsync(filePath, content);
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -36,25 +60,15 @@ namespace Spa.Server
                     {
                         var env = context.HostingEnvironment;
 
-                        var spaOptions = context.Configuration.GetSection("Spa").Get<SpaOptions>();
+                        var spaOptions =
+                            context.Configuration
+                                .GetSection("Spa")
+                                .Get<SpaOptions>();
 
                         var spaPath =
                             Path.IsPathRooted(spaOptions.RootPath)
                                 ? spaOptions.RootPath
                                 : Path.Combine(env.ContentRootPath, spaOptions.RootPath);
-
-                        if (spaOptions.PopulateEnvironmentVariablesInFiles?.Count > 0)
-                        {
-                            foreach (var filePath in spaOptions.PopulateEnvironmentVariablesInFiles)
-                            {
-                                var currentFilePath =
-                                    Path.IsPathRooted(filePath)
-                                        ? filePath
-                                        : Path.Combine(spaPath, filePath);
-
-                                PopulateEnvironmentVariablesInFile(currentFilePath);
-                            }
-                        }
 
                         services.AddSpaStaticFiles(setup => setup.RootPath = spaPath);
 
