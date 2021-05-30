@@ -45,15 +45,15 @@ namespace Spa.Server
 
                     logger.LogDebug($"Populating environment variables in {currentFilePath}");
 
-                    var content = File.ReadAllText(filePath);
+                    var content = File.ReadAllText(currentFilePath);
 
-                    logger.LogTrace($"{filePath} old content:\n{content}");
+                    logger.LogTrace($"{currentFilePath} old content:\n{content}");
 
                     content = Environment.ExpandEnvironmentVariables(content);
 
-                    File.WriteAllText(filePath, content);
+                    File.WriteAllText(currentFilePath, content);
 
-                    logger.LogTrace($"{filePath} new content:\n{content}");
+                    logger.LogTrace($"{currentFilePath} new content:\n{content}");
                 }
             }
 
