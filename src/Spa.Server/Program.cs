@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Spa.Server
 {
-    public static class Program
+    public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             DotNetEnv.Env.Load();
 
@@ -23,13 +23,19 @@ namespace Spa.Server
 
             var spaOptions = webHost.Services.GetRequiredService<SpaOptions>();
 
+            var logger = webHost.Services.GetRequiredService<ILogger<Program>>();
+
             var spaPath =
                 Path.IsPathRooted(spaOptions.RootPath)
                     ? spaOptions.RootPath
                     : Path.Combine(env.ContentRootPath, spaOptions.RootPath);
 
+            logger.LogDebug($"Spa path: {spaPath}");
+
             if (spaOptions.PopulateEnvironmentVariablesInFiles?.Count > 0)
             {
+                logger.LogDebug("Populating environment variables in files...");
+
                 foreach (var filePath in spaOptions.PopulateEnvironmentVariablesInFiles)
                 {
                     var currentFilePath =
@@ -37,20 +43,21 @@ namespace Spa.Server
                             ? filePath
                             : Path.Combine(spaPath, filePath);
 
-                    PopulateEnvironmentVariablesInFileAsync(currentFilePath);
+                    logger.LogDebug($"Populating environment variables in {currentFilePath}");
+
+                    var content = File.ReadAllText(filePath);
+
+                    logger.LogTrace($"{filePath} old content:\n{content}");
+
+                    content = Environment.ExpandEnvironmentVariables(content);
+
+                    File.WriteAllText(filePath, content);
+
+                    logger.LogTrace($"{filePath} new content:\n{content}");
                 }
             }
 
-            await webHost.RunAsync();
-        }
-
-        private static async Task PopulateEnvironmentVariablesInFileAsync(string filePath)
-        {
-            var content = File.ReadAllText(filePath);
-
-            content = Environment.ExpandEnvironmentVariables(content);
-
-            await File.WriteAllTextAsync(filePath, content);
+            webHost.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
