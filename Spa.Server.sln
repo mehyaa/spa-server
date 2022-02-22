@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{464F1359-75E5-47A0-B68D-681A4F6E2B16}"
-ProjectSection(SolutionItems) = preProject
-	.dockerignore = .dockerignore
-	.editorconfig = .editorconfig
-	.gitignore = .gitignore
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		docker-build.yml = .github\workflows\docker-build.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spa.Server", "src\Spa.Server\Spa.Server.csproj", "{415E7FE1-0A90-4C77-8A28-55AF27A7B3DB}"
 EndProject
