@@ -35,8 +35,8 @@ static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
                         .GetSection("StaticFiles")
                         .Get<StaticFileOptions[]>();
 
-                services.AddSingleton(spaOptions);
-                services.AddSingleton(staticFileOptions);
+                services.AddSingleton(spaOptions ?? new SpaOptions());
+                services.AddSingleton(staticFileOptions ?? new StaticFileOptions[0]);
 
                 var spaRootPath =
                     Path.IsPathRooted(spaOptions.RootPath)
@@ -95,6 +95,8 @@ static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 
                                 await context.Response.WriteAsync(exception?.ToString() ?? "Error occured.");
                             }));
+
+                app.UsePathBase(spaOptions.UrlBasePath ?? "/");
 
                 var spaStaticFileOptions =
                     new Microsoft.AspNetCore.Builder.StaticFileOptions

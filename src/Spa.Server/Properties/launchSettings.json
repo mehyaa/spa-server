@@ -3,7 +3,7 @@
     "Spa.Server": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://0.0.0.0:5000",
+      "applicationUrl": "http://0.0.0.0:8080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "local"
       }
